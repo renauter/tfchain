@@ -22,11 +22,11 @@ json
 ```
 contract {
     "workload": "encrypted_workload_data",
-    "node_address": "some_node_address",
+    "node_id": "node_id",
     "public_ips": NumberOfPublicIPS
 }
 ```
-The `node_address` field is the target node's ss58 address. A user can do lookup for a node to find it's corresponding address.
+The `node_id` field is the target node's integer ID.
 
 The workload data is encrypted by the user and contains the workload definition for the node.
 
