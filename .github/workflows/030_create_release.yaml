@@ -5,6 +5,9 @@ on:
     tags:
       - '*'
 
+env:
+  IMAGE_TAG: git describe --abbrev=0 --tags | sed 's/^v//'
+
 jobs:
     build-bridge-deamon-image:
       runs-on: ubuntu-latest
@@ -14,11 +17,11 @@ jobs:
 
         - name: Build Docker image
           id: build_image
-          run: docker build -t tfchainbridge:$(git describe --abbrev=0 --tags | sed 's/^v//') . -f bridge/tfchain_bridge/Dockerfile
+          run: docker build -t tfchainbridge:${IMAGE_TAG} . -f bridge/tfchain_bridge/Dockerfile
 
         - name: Save Docker image
           id: save_image
-          run: docker save --output tfchainbridge.tar tfchainbridge:latest
+          run: docker save --output tfchainbridge.tar tfchainbridge:${IMAGE_TAG}
 
         - name: Upload Docker image
           id: upload_image
