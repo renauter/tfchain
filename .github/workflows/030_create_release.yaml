@@ -8,22 +8,21 @@ on:
 jobs:
     build-bridge-deamon-image:
       runs-on: ubuntu-latest
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v3
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+        - name: Build Docker image
+          id: build_image
+          run: docker build -t tfchainbridge:$(git describe --abbrev=0 --tags | sed 's/^v//') . -f bridge/tfchain_bridge/Dockerfile
 
-      - name: Build Docker image
-        id: build_image
-        run: docker build -t tfchainbridge:$(git describe --abbrev=0 --tags | sed 's/^v//') . -f bridge/tfchain_bridge/Dockerfile
+        - name: Save Docker image
+          id: save_image
+          run: docker save --output tfchainbridge.tar tfchainbridge:latest
 
-      - name: Save Docker image
-        id: save_image
-        run: docker save --output tfchainbridge.tar tfchainbridge:latest
-
-      - name: Upload Docker image
-        id: upload_image
-        uses: actions/upload-artifact@v3
-        with:
-          name: tfchainbridge-image
-          path: tfchainbridge.tar
+        - name: Upload Docker image
+          id: upload_image
+          uses: actions/upload-artifact@v3
+          with:
+            name: tfchainbridge-image
+            path: tfchainbridge.tar
