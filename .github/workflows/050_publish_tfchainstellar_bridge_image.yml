@@ -28,7 +28,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ghcr.io/threefoldtech/tfchain_stellar_bridge
+          images: ghcr.io/renauter/tfchain_stellar_bridge
           tags: |
             type=semver,pattern={{version}}
 
