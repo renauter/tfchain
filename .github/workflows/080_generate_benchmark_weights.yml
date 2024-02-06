@@ -25,7 +25,7 @@ jobs:
           exit 1
           
       - name: Checkout the repo
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v3
 
       # - name: Get all *.rs files that have changed in pallets
       #   id: pallets-changed-rust-files
