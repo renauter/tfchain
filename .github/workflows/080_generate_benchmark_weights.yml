@@ -2,13 +2,9 @@ name: Generate benchmark weights
 
 on:
   push:
-    branches:
-      - !development
     paths:
       - 'substrate-node/pallets/**.rs'
   workflow_dispatch:
-    branches:
-      - !development
 
 jobs:
   benchmark-weights:
