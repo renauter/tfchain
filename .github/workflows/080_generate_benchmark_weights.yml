@@ -23,44 +23,33 @@ jobs:
       - name: Checkout the repo
         uses: actions/checkout@v3
 
-      # - name: Get all *.rs files that have changed in pallets
-      #   id: pallets-changed-rust-files
-      #   uses: tj-actions/changed-files@v42
-      #   with:
-      #     files: |
-      #       substrate-node/pallets/**.rs
-
-      - name: Get all *.rs files that have changed in pallets
-        id: pallets-changed-src-dir
-        uses: tj-actions/changed-files@v42
-        with:
-          dir_names: "true"
-          files: |
-            substrate-node/pallets/**.rs
-
       - name: Build
         run: |
           cd substrate-node
           cargo build --profile=bench --features runtime-benchmarks
 
       - name: Run benchmarking
-        env:
-          ALL_CHANGED_PALLETS_DIR: ${{ steps.pallets-changed-src-dir.all_changed_files }}
         run: |
-          for pallet_src_dir in ${ALL_CHANGED_PALLETS_SRC_DIR}
+          cd substrate-node
+          for weights_rs_file in ./pallets/*/src/weights.rs
           do
-            echo "pallet src dir: $pallet_src_dir"
-            weights_file="$pallet_src_dir"/weights.rs
-            echo "weights file: $weights_file"
-            rm $weights_file
-            pal_name=$(awk -F'pallets/|/src' '{print $2}' <<< $pallet_src_dir)
-            ./target/release/tfchain benchmark pallet --chain=dev --pallet="$pal_name" \
-            --extrinsic="*" --steps=50 --repeat=20 --execution=wasm --heap-pages=409 \
-            --output ./pallets/"$pal_name"/src/weights.rs --template ./.maintain/frame-weight-template.hbs
+            rm $weights_rs_file
+            pal_name=$(awk -F'pallets/|/src' '{print $2}' <<< $weights_rs_file)
+            ./target/bench/tfchain benchmark pallet \
+            --chain=dev \
+            --wasm-execution=compiled \
+            --pallet="$pal_name" \
+            --extrinsic="*" \
+            --steps=50 \
+            --repeat=20 \
+            --heap-pages=409 \
+            --output ./pallets/"$pal_name"/src/weights.rs \
+            --template ./.maintain/frame-weight-template.hbs
           done
 
       - name: Commit & Push changes
         uses: actions-js/push@master
         with:
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            message: 'chore: update benchmark `weights.rs` files ${date}'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          message: 'chore(pallets): update benchmark `weights.rs` files ${date}'
+          branch: ${{ github.ref_name }}
