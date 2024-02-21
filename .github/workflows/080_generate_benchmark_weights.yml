@@ -25,6 +25,7 @@ jobs:
 
       - name: Build
         run: |
+          apt install protobuf-compiler
           cd substrate-node
           cargo build --profile=bench --features runtime-benchmarks
 
